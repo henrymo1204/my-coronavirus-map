@@ -9,25 +9,27 @@ import Container from 'components/Container';
 import Map from 'components/Map';
 
 const LOCATION = {
-  lat: -45,
+  lat: 0,
   lng: 0
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 2;
+const DEFAULT_ZOOM = 1;
 
 
 
 const IndexPage = () => {
 
+  const { data: countries = [] } = useTracker({
+    api: 'countries'
+  });
+
   const { data: stats = {} } = useTracker({
     api: 'all'
   });
   console.log('stats',stats); 
+  console.log('Data',countries); 
 
-  const { data: countries = [] } = useTracker({
-    api: 'countries'
-  });
-  
+
   const hasCountries = Array.isArray(countries) && countries.length > 0;
 
   const dashboardStats = [
@@ -165,7 +167,6 @@ const IndexPage = () => {
     });
 
     geoJsonLayers.addTo(map)
-
   }
 
   const mapSettings = {
@@ -181,9 +182,9 @@ const IndexPage = () => {
         <title>Home Page</title>
       </Helmet>
         
-      <Map {...mapSettings} />
-      <div className="tracker">
 
+      <div className="tracker">
+        <Map {...mapSettings} />
         <div className="tracker-stats">
           <ul>
             { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
@@ -213,6 +214,15 @@ const IndexPage = () => {
           </div>
         </div>
       </div>
+
+      <Container type="content" className="text-center home-start">
+        <h2>Still Getting Started?</h2>
+        <p>Run the following in your terminal!</p>
+        <pre>
+          <code>gatsby new [directory] https://github.com/colbyfayock/gatsby-starter-leaflet</code>
+        </pre>
+        <p className="note">Note: Gatsby CLI required globally for the above command</p>
+      </Container>
     </Layout>
   );
 };

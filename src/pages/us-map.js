@@ -1,7 +1,7 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import L from 'leaflet';
-import { useTracker } from 'hooks';
+import { useTrackerUS } from 'hooks';
 import { commafy, friendlyDate } from 'lib/util';
 
 import Layout from 'components/Layout';
@@ -10,27 +10,26 @@ import Map from 'components/Map';
 
 const LOCATION = {
   lat: 0,
-  lng: 0
+  lng: -60
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 1;
+const DEFAULT_ZOOM = 2;
 
 
 
 const UsMap = () => {
 
-  const { data: stats = {} } = useTracker({
-    api: 'all'
-  });
-  console.log('stats',stats); 
 
-  const { data: states = [] } = useTracker({
-    api: 'states'
-  });
   
-  const hasStates = Array.isArray(states) && states.length > 0;
+  const { data: counties = {} } = useTrackerUS({
+    api: 'counties'
+  });
+  console.log('CountyData',counties); 
 
-  const dashboardStats = [
+
+  const hasCounties = Array.isArray(counties) && counties.length > 0;
+
+  /*const dashboardStats = [
     {
       primary: {
         label: 'Total Cases',
@@ -80,7 +79,7 @@ const UsMap = () => {
         value: stats ? commafy(stats?.recovered) : '-'
       }
     }
-  ]
+  ]*/
 
   /**
    * mapEffect
@@ -90,7 +89,7 @@ const UsMap = () => {
 
   async function mapEffect({ leafletElement: map } = {}) {
     
-    if ( !hasStates || !map ) return;
+    if ( !hasCounties || !map ) return;
 
     map.eachLayer(layer => {
       if ( layer?.options?.name === 'OpenStreetMap' ) return;
@@ -99,17 +98,17 @@ const UsMap = () => {
 
     const geoJson = {
       type: 'FeatureCollection',
-      features: states.map((state = {}) => {
-        const { stateInfo = {} } = state;
-        const { lat, long: lng } = stateInfo;
+      features: counties.map((county = {}) => {
+        const { coordinates = {} } = county;
+        const { latitude, longitude } = coordinates;
         return {
           type: 'Feature',
           properties: {
-            ...state,
+            ...county,
           },
           geometry: {
             type: 'Point',
-            coordinates: [ lng, lat ]
+            coordinates: [ longitude, latitude ]
           }
         }
       })
@@ -122,35 +121,34 @@ const UsMap = () => {
         let casesString;
 
         const {
-          state,
-          updated,
-          cases,
-          deaths,
-          recovered
+          province,
+          updatedAt,
+          county,
+          country,
+          stats
         } = properties
 
-        casesString = `${cases}`;
-
-        if ( cases > 1000 ) {
+        if ( county > 1000 ) {
           casesString = `${casesString.slice(0, -3)}k+`
         }
 
-        if ( updated ) {
-          updatedFormatted = new Date(updated).toLocaleString();
+        if ( updatedAt ) {
+          updatedFormatted = new Date(updatedAt).toLocaleString();
         }
 
         const html = `
           <span class="icon-marker">
             <span class="icon-marker-tooltip">
-              <h2>${state}</h2>
+              <h2>${county}</h2>
               <ul>
-                <li><strong>Confirmed:</strong> ${cases}</li>
-                <li><strong>Deaths:</strong> ${deaths}</li>
-                <li><strong>Recovered:</strong> ${recovered}</li>
+                <li><strong>State:</strong> ${province}</li>
+                <li><strong>Confirmed:</strong> ${stats.confirmed}</li>
+                <li><strong>Deaths:</strong> ${stats.deaths}</li>
+                <li><strong>Recovered:</strong> ${stats.recovered}</li>
                 <li><strong>Last Update:</strong> ${updatedFormatted}</li>
               </ul>
             </span>
-            ${ casesString }
+            ${ province }
           </span>
         `;
 
@@ -169,7 +167,7 @@ const UsMap = () => {
 
 
 
-  
+
 
   const mapSettings = {
     center: CENTER,
@@ -185,37 +183,10 @@ const UsMap = () => {
       </Helmet>
         
 
-      <div className="tracker">
+      
         <Map {...mapSettings} />
-        <div className="tracker-stats">
-          <ul>
-            { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
-              return (
-                <li key={`Stat-${i}`} className="tracker-stat">
-                  { primary.value && (
-                    <p className="tracker-stat-primary">
-                      { primary.value }
-                      <strong>{ primary.label }</strong>
-                    </p>
-                  )}
-                  { secondary.value && (
-                    <p className="tracker-stat-secondary">
-                      { secondary.value }
-                      <strong>{ secondary.label }</strong>
-                    </p>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
 
-          <div className="tracker-last-updated">
-            <p>
-              Last Updated: { stats ? friendlyDate(stats?.updated) : '-' }
-            </p>
-          </div>
-        </div>
-      </div>
+        
 
       <Container type="content" className="text-center home-start">
         <h2>Still Getting Started?</h2>
