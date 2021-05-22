@@ -1,7 +1,8 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import L from 'leaflet';
-import axios from 'axios';
+import { useTracker } from 'hooks';
+import { commafy, friendlyDate } from 'lib/util';
 
 import Layout from 'components/Layout';
 import Container from 'components/Container';
@@ -12,9 +13,74 @@ const LOCATION = {
   lng: 0
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 2;
+const DEFAULT_ZOOM = 1;
+
+
 
 const IndexPage = () => {
+
+  const { data: stats = {} } = useTracker({
+    api: 'all'
+  });
+  console.log('stats',stats); 
+
+  const { data: countries = [] } = useTracker({
+    api: 'countries'
+  });
+  
+  const hasCountries = Array.isArray(countries) && countries.length > 0;
+
+  const dashboardStats = [
+    {
+      primary: {
+        label: 'Total Cases',
+        value: stats ? commafy(stats?.cases) : '-'
+      },
+      secondary: {
+        label: 'Per 1 Million',
+        value: stats ?.casesPerOneMillion
+      }
+    },
+    {
+      primary: {
+        label: 'Total Deaths',
+        value: stats ? commafy(stats?.deaths) : '-'
+      },
+      secondary: {
+        label: 'Per 1 Million',
+        value: stats ?.deathsPerOneMillion
+      }
+    },
+    {
+      primary: {
+        label: 'Total Tests',
+        value: stats ? commafy(stats?.tests) : '-'
+      },
+      secondary: {
+        label: 'Per 1 Million',
+        value: stats?.testsPerOneMillion
+      }
+    },
+
+    {
+      primary: {
+        label: 'Active Cases',
+        value: stats ? commafy(stats?.active) : '-'
+      }
+    },
+    {
+      primary: {
+        label: 'Critical Cases',
+        value: stats ? commafy(stats?.critical) : '-'
+      }
+    },
+    {
+      primary: {
+        label: 'Recovered Cases',
+        value: stats ? commafy(stats?.recovered) : '-'
+      }
+    }
+  ]
 
   /**
    * mapEffect
@@ -23,23 +89,17 @@ const IndexPage = () => {
    */
 
   async function mapEffect({ leafletElement: map } = {}) {
-    let response;
+    
+    if ( !hasCountries || !map ) return;
 
-    try {
-      response = await axios.get('https://corona.lmao.ninja/v2/countries');
-    } catch(e) {
-      console.log(`Failed to fetch countries: ${e.message}`, e);
-      return;
-    }
-
-    const { data = [] } = response;
-    const hasData = Array.isArray(data) && data.length > 0;
-
-    if ( !hasData ) return;
+    map.eachLayer(layer => {
+      if ( layer?.options?.name === 'OpenStreetMap' ) return;
+      map.removeLayer(layer);
+    });
 
     const geoJson = {
       type: 'FeatureCollection',
-      features: data.map((country = {}) => {
+      features: countries.map((country = {}) => {
         const { countryInfo = {} } = country;
         const { lat, long: lng } = countryInfo;
         return {
@@ -119,8 +179,39 @@ const IndexPage = () => {
       <Helmet>
         <title>Home Page</title>
       </Helmet>
+        
 
-      <Map {...mapSettings} />
+      <div className="tracker">
+        <Map {...mapSettings} />
+        <div className="tracker-stats">
+          <ul>
+            { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
+              return (
+                <li key={`Stat-${i}`} className="tracker-stat">
+                  { primary.value && (
+                    <p className="tracker-stat-primary">
+                      { primary.value }
+                      <strong>{ primary.label }</strong>
+                    </p>
+                  )}
+                  { secondary.value && (
+                    <p className="tracker-stat-secondary">
+                      { secondary.value }
+                      <strong>{ secondary.label }</strong>
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="tracker-last-updated">
+            <p>
+              Last Updated: { stats ? friendlyDate(stats?.updated) : '-' }
+            </p>
+          </div>
+        </div>
+      </div>
 
       <Container type="content" className="text-center home-start">
         <h2>Still Getting Started?</h2>
