@@ -16,6 +16,7 @@
     "path": "^0.12.7",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
+    "react-chartjs-2": "^3.0.3",
     "react-dom": "^16.13.0",
     "react-helmet": "^5.2.0",
     "react-leaflet": "^2.6.3"
