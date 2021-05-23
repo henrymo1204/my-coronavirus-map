@@ -2,6 +2,8 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import L from 'leaflet';
 import { useTrackerUS } from 'hooks';
+import { useTrackerCali} from 'hooks';
+
 import { commafy, friendlyDate } from 'lib/util';
 
 import Layout from 'components/Layout';
@@ -9,74 +11,105 @@ import Container from 'components/Container';
 import Map from 'components/Map';
 
 const LOCATION = {
-  lat: 0,
-  lng: -60
+  lat: 35,
+  lng: -120
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 2;
+const DEFAULT_ZOOM = 6;
 
 
 
 const UsMap = () => {
 
+  var count =0;
+  var i;
+  var stateStorage = [];
 
-  
   const { data: counties = {} } = useTrackerUS({
     api: 'counties'
   });
+
+  const { data: california = {} } = useTrackerCali({
+    api: 'california'
+  });
+
+  for (i in counties) {
+    if (counties.hasOwnProperty(i)) 
+    {
+      count++;
+    }
+  }
+
+  for (let i =0; i <count; i++) {
+    if (counties[i].province==='California' && counties[i].county !== "Unassigned")
+    {
+        stateStorage.push(counties[i]); 
+    }
+  }
   console.log('CountyData',counties); 
+  console.log('CaliData',stateStorage); 
+  console.log('CaliTotals',california); 
 
 
-  const hasCounties = Array.isArray(counties) && counties.length > 0;
+  const hasCounties = Array.isArray(stateStorage) && stateStorage.length > 0;
 
   /*const dashboardStats = [
     {
       primary: {
         label: 'Total Cases',
-        value: stats ? commafy(stats?.cases) : '-'
+        value: california ? commafy(california?.cases) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats ?.casesPerOneMillion
+        value: california ? commafy(california?.casesPerOneMillion) : '-'
       }
     },
     {
       primary: {
         label: 'Total Deaths',
-        value: stats ? commafy(stats?.deaths) : '-'
+        value: california ? commafy(california?.deaths) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats ?.deathsPerOneMillion
+        value: california ? commafy(california?.deathsPerOneMillion) : '-'
       }
     },
     {
       primary: {
         label: 'Total Tests',
-        value: stats ? commafy(stats?.tests) : '-'
+        value: california ? commafy(california?.tests) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats?.testsPerOneMillion
+        value: california? commafy(california?.testsPerOneMillion) : '-'
       }
     },
 
     {
       primary: {
         label: 'Active Cases',
-        value: stats ? commafy(stats?.active) : '-'
+        value: california ? commafy(california?.active) : '-'
+      },
+
+      secondary: {
+        label: 'Population',
+        value: california ? commafy(california?.population) : '-'
       }
     },
     {
       primary: {
-        label: 'Critical Cases',
-        value: stats ? commafy(stats?.critical) : '-'
+        label: 'Cases Today',
+        value: california ? commafy(california?.todayCases) : '-'
+      },
+      secondary: {
+        label: 'Deaths Today',
+        value: california?.todayDeaths
       }
     },
     {
       primary: {
         label: 'Recovered Cases',
-        value: stats ? commafy(stats?.recovered) : '-'
+        value: california ? commafy(california?.recovered) : '-'
       }
     }
   ]*/
@@ -98,7 +131,7 @@ const UsMap = () => {
 
     const geoJson = {
       type: 'FeatureCollection',
-      features: counties.map((county = {}) => {
+      features: stateStorage.map((county = {}) => {
         const { coordinates = {} } = county;
         const { latitude, longitude } = coordinates;
         return {
@@ -148,7 +181,7 @@ const UsMap = () => {
                 <li><strong>Last Update:</strong> ${updatedFormatted}</li>
               </ul>
             </span>
-            ${ province }
+            ${ county }
           </span>
         `;
 
@@ -181,12 +214,38 @@ const UsMap = () => {
       <Helmet>
         <title>Home Page</title>
       </Helmet>
-        
-
+      <Map {...mapSettings} />
+      <div className="tracker">
       
-        <Map {...mapSettings} />
+        <div className="tracker-stats">
+          <ul>
+            { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
+              return (
+                <li key={`Stat-${i}`} className="tracker-stat">
+                  { primary.value && (
+                    <p className="tracker-stat-primary">
+                      { primary.value }
+                      <strong>{ primary.label }</strong>
+                    </p>
+                  )}
+                  { secondary.value && (
+                    <p className="tracker-stat-secondary">
+                      { secondary.value }
+                      <strong>{ secondary.label }</strong>
+                    </p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
 
-        
+          <div className="tracker-last-updated">
+            <p>
+              Last Updated: { california ? friendlyDate(california?.updated) : '-' }
+            </p>
+          </div>
+        </div>
+      </div>
 
       <Container type="content" className="text-center home-start">
         <h2>Still Getting Started?</h2>
