@@ -28,10 +28,10 @@ const IndexPage = () => {
   });
 
 
+
   
   console.log('stats',stats); 
   console.log('Data',countries); 
-
 
   const hasCountries = Array.isArray(countries) && countries.length > 0;
 

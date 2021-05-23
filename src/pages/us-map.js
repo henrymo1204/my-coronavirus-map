@@ -3,6 +3,7 @@ import Helmet from 'react-helmet';
 import L from 'leaflet';
 import { useTrackerUS } from 'hooks';
 import { useTrackerCali} from 'hooks';
+
 import { commafy, friendlyDate } from 'lib/util';
 
 import Layout from 'components/Layout';
@@ -52,7 +53,7 @@ const UsMap = () => {
 
   const hasCounties = Array.isArray(stateStorage) && stateStorage.length > 0;
 
-  const dashboardStats = [
+  /*const dashboardStats = [
     {
       primary: {
         label: 'Total Cases',
@@ -111,7 +112,7 @@ const UsMap = () => {
         value: california ? commafy(california?.recovered) : '-'
       }
     }
-  ]
+  ]*/
 
   /**
    * mapEffect
