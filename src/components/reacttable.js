@@ -1,7 +1,6 @@
 // npm install @material-ui/core          or   yarn add @material-ui/core
 // npm install react-virtualized --save   or   yarn add react-virtualized --save
 // npm install axios                      or   yarn add axios
-// npm install react-number-format --save or   yarn add react-number-format
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
@@ -11,7 +10,6 @@ import TableCell from '@material-ui/core/TableCell';
 import Paper from '@material-ui/core/Paper';
 import { AutoSizer, Column, Table } from 'react-virtualized';
 import axios from 'axios';
-import NumberFormat from 'react-number-format'
 
 const styles = (theme) => ({
   flexContainer: {
