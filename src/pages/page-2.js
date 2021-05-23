@@ -17,7 +17,7 @@ const SecondPage = () => {
         <title>Page Two</title>
       </Helmet>
       <Container type="content" className="text-center">
-        <Graph></Graph>
+        <Graph>{'test'}</Graph>
       </Container>
     </Layout>
   );

@@ -7,9 +7,12 @@ import { commafy, friendlyDate } from 'lib/util';
 import Layout from 'components/Layout';
 import Container from 'components/Container';
 import Map from 'components/Map';
+import Graph from 'components/Graph';
+import ProjectedGraph from 'components/ProjectedGraph';
+import PredictGraph from 'components/PredictGraph';
 
 const LOCATION = {
-  lat: -20,
+  lat: -45,
   lng: 0
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
@@ -216,15 +219,14 @@ const IndexPage = () => {
           </div>
         </div>
       </div>
-
-      <Container type="content" className="text-center home-start">
-        <h2>Still Getting Started?</h2>
-        <p>Run the following in your terminal!</p>
-        <pre>
-          <code>gatsby new [directory] https://github.com/colbyfayock/gatsby-starter-leaflet</code>
-        </pre>
-        <p className="note">Note: Gatsby CLI required globally for the above command</p>
-      </Container>
+      <div>Total Cases, Decovered, Deaths By Country</div>
+      <Graph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></Graph>
+      <div>Total Cases, Decovered, Deaths Worldwide In The Past 14 Days</div>
+      <Graph url={'https://corona.lmao.ninja/v3/covid-19/historical/all?lastdays=14'}></Graph>
+      <div>Projected Actual Total Cases, Decovered, Deaths By Country</div>
+      <ProjectedGraph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></ProjectedGraph>
+      <div>Prediction of Actual Total Cases, Decovered, Deaths By Country</div>
+      <PredictGraph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></PredictGraph>
     </Layout>
   );
 };

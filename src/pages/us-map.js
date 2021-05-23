@@ -9,6 +9,9 @@ import { commafy, friendlyDate } from 'lib/util';
 import Layout from 'components/Layout';
 import Container from 'components/Container';
 import Map from 'components/Map';
+import Graph from 'components/Graph';
+import ProjectedGraph from '../components/ProjectedGraph';
+import PredictGraph from '../components/PredictGraph';
 
 const LOCATION = {
   lat: 35,
@@ -16,14 +19,13 @@ const LOCATION = {
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
 const DEFAULT_ZOOM = 6;
-
+var stateStorage = [];
 
 
 const UsMap = () => {
 
   var count =0;
   var i;
-  var stateStorage = [];
 
   const { data: counties = {} } = useTrackerUS({
     api: 'counties'
@@ -53,7 +55,7 @@ const UsMap = () => {
 
   const hasCounties = Array.isArray(stateStorage) && stateStorage.length > 0;
 
-  /*const dashboardStats = [
+  const dashboardStats = [
     {
       primary: {
         label: 'Total Cases',
@@ -112,7 +114,7 @@ const UsMap = () => {
         value: california ? commafy(california?.recovered) : '-'
       }
     }
-  ]*/
+  ]
 
   /**
    * mapEffect
@@ -214,9 +216,9 @@ const UsMap = () => {
       <Helmet>
         <title>Home Page</title>
       </Helmet>
+
       <Map {...mapSettings} />
       <div className="tracker">
-      
         <div className="tracker-stats">
           <ul>
             { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
@@ -246,15 +248,12 @@ const UsMap = () => {
           </div>
         </div>
       </div>
-
-      <Container type="content" className="text-center home-start">
-        <h2>Still Getting Started?</h2>
-        <p>Run the following in your terminal!</p>
-        <pre>
-          <code>gatsby new [directory] https://github.com/colbyfayock/gatsby-starter-leaflet</code>
-        </pre>
-        <p className="note">Note: Gatsby CLI required globally for the above command</p>
-      </Container>
+      <div>Total Cases, Decovered, Deaths By California County</div>
+      <Graph url={'https://corona.lmao.ninja/v3/covid-19/historical/usacounties/california?lastdays=2'}></Graph>
+      <div>Projected Actual Total Cases, Decovered, Deaths By California County</div>
+      <ProjectedGraph url={'https://corona.lmao.ninja/v3/covid-19/jhucsse/counties'}></ProjectedGraph>
+      <div>Prediction of Actual Total Cases, Decovered, Deaths By California County</div>
+      <PredictGraph url={'https://corona.lmao.ninja/v3/covid-19/jhucsse/counties'}></PredictGraph>
     </Layout>
   );
 };
