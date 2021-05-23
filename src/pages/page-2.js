@@ -15,12 +15,12 @@ const SecondPage = () => {
         <title>Page Two</title>
       </Helmet>
       <Container type="content" className="text-center">
-      <div className = 'App'>
-            <h1>Country</h1>
+      <div className = 'App'>     
+            <h1>Covid-19 Cases All Over The World</h1>
             <ReactVirtualizedTable_byCountry/>
-            <h1>States</h1>
+            <h1>Covid-19 Cases in US</h1>
             <ReactVirtualizedTable_byStates/>
-            <h1>County</h1>
+            <h1>Covid-19 Cases in California</h1>
             <ReactVirtualizedTable_byCounty/>
         </div>
       </Container>
