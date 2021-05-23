@@ -1,7 +1,8 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import L from 'leaflet';
-import { useTracker } from 'hooks';
+import { useTrackerUS } from 'hooks';
+import { useTrackerCali} from 'hooks';
 import { commafy, friendlyDate } from 'lib/util';
 
 import Layout from 'components/Layout';
@@ -9,75 +10,105 @@ import Container from 'components/Container';
 import Map from 'components/Map';
 
 const LOCATION = {
-  lat: 0,
-  lng: 0
+  lat: 35,
+  lng: -120
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 1;
+const DEFAULT_ZOOM = 6;
 
 
 
 const UsMap = () => {
 
-  const { data: stats = {} } = useTracker({
-    api: 'all'
-  });
-  console.log('stats',stats); 
+  var count =0;
+  var i;
+  var stateStorage = [];
 
-  const { data: states = [] } = useTracker({
-    api: 'states'
+  const { data: counties = {} } = useTrackerUS({
+    api: 'counties'
   });
-  
-  const hasStates = Array.isArray(states) && states.length > 0;
+
+  const { data: california = {} } = useTrackerCali({
+    api: 'california'
+  });
+
+  for (i in counties) {
+    if (counties.hasOwnProperty(i)) 
+    {
+      count++;
+    }
+  }
+
+  for (let i =0; i <count; i++) {
+    if (counties[i].province==='California' && counties[i].county !== "Unassigned")
+    {
+        stateStorage.push(counties[i]); 
+    }
+  }
+  console.log('CountyData',counties); 
+  console.log('CaliData',stateStorage); 
+  console.log('CaliTotals',california); 
+
+
+  const hasCounties = Array.isArray(stateStorage) && stateStorage.length > 0;
 
   const dashboardStats = [
     {
       primary: {
         label: 'Total Cases',
-        value: stats ? commafy(stats?.cases) : '-'
+        value: california ? commafy(california?.cases) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats ?.casesPerOneMillion
+        value: california ? commafy(california?.casesPerOneMillion) : '-'
       }
     },
     {
       primary: {
         label: 'Total Deaths',
-        value: stats ? commafy(stats?.deaths) : '-'
+        value: california ? commafy(california?.deaths) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats ?.deathsPerOneMillion
+        value: california ? commafy(california?.deathsPerOneMillion) : '-'
       }
     },
     {
       primary: {
         label: 'Total Tests',
-        value: stats ? commafy(stats?.tests) : '-'
+        value: california ? commafy(california?.tests) : '-'
       },
       secondary: {
         label: 'Per 1 Million',
-        value: stats?.testsPerOneMillion
+        value: california? commafy(california?.testsPerOneMillion) : '-'
       }
     },
 
     {
       primary: {
         label: 'Active Cases',
-        value: stats ? commafy(stats?.active) : '-'
+        value: california ? commafy(california?.active) : '-'
+      },
+
+      secondary: {
+        label: 'Population',
+        value: california ? commafy(california?.population) : '-'
       }
     },
     {
       primary: {
-        label: 'Critical Cases',
-        value: stats ? commafy(stats?.critical) : '-'
+        label: 'Cases Today',
+        value: california ? commafy(california?.todayCases) : '-'
+      },
+      secondary: {
+        label: 'Deaths Today',
+        value: california?.todayDeaths
       }
     },
     {
       primary: {
         label: 'Recovered Cases',
-        value: stats ? commafy(stats?.recovered) : '-'
+        value: california ? commafy(california?.recovered) : '-'
       }
     }
   ]
@@ -90,7 +121,7 @@ const UsMap = () => {
 
   async function mapEffect({ leafletElement: map } = {}) {
     
-    if ( !hasStates || !map ) return;
+    if ( !hasCounties || !map ) return;
 
     map.eachLayer(layer => {
       if ( layer?.options?.name === 'OpenStreetMap' ) return;
@@ -99,17 +130,17 @@ const UsMap = () => {
 
     const geoJson = {
       type: 'FeatureCollection',
-      features: states.map((state = {}) => {
-        const { stateInfo = {} } = state;
-        const { lat, long: lng } = stateInfo;
+      features: stateStorage.map((county = {}) => {
+        const { coordinates = {} } = county;
+        const { latitude, longitude } = coordinates;
         return {
           type: 'Feature',
           properties: {
-            ...state,
+            ...county,
           },
           geometry: {
             type: 'Point',
-            coordinates: [ lng, lat ]
+            coordinates: [ longitude, latitude ]
           }
         }
       })
@@ -122,35 +153,34 @@ const UsMap = () => {
         let casesString;
 
         const {
-          state,
-          updated,
-          cases,
-          deaths,
-          recovered
+          province,
+          updatedAt,
+          county,
+          country,
+          stats
         } = properties
 
-        casesString = `${cases}`;
-
-        if ( cases > 1000 ) {
+        if ( county > 1000 ) {
           casesString = `${casesString.slice(0, -3)}k+`
         }
 
-        if ( updated ) {
-          updatedFormatted = new Date(updated).toLocaleString();
+        if ( updatedAt ) {
+          updatedFormatted = new Date(updatedAt).toLocaleString();
         }
 
         const html = `
           <span class="icon-marker">
             <span class="icon-marker-tooltip">
-              <h2>${state}</h2>
+              <h2>${county}</h2>
               <ul>
-                <li><strong>Confirmed:</strong> ${cases}</li>
-                <li><strong>Deaths:</strong> ${deaths}</li>
-                <li><strong>Recovered:</strong> ${recovered}</li>
+                <li><strong>State:</strong> ${province}</li>
+                <li><strong>Confirmed:</strong> ${stats.confirmed}</li>
+                <li><strong>Deaths:</strong> ${stats.deaths}</li>
+                <li><strong>Recovered:</strong> ${stats.recovered}</li>
                 <li><strong>Last Update:</strong> ${updatedFormatted}</li>
               </ul>
             </span>
-            ${ casesString }
+            ${ county }
           </span>
         `;
 
@@ -169,7 +199,7 @@ const UsMap = () => {
 
 
 
-  
+
 
   const mapSettings = {
     center: CENTER,
@@ -183,10 +213,9 @@ const UsMap = () => {
       <Helmet>
         <title>Home Page</title>
       </Helmet>
-        
-
+      <Map {...mapSettings} />
       <div className="tracker">
-        <Map {...mapSettings} />
+      
         <div className="tracker-stats">
           <ul>
             { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
@@ -211,7 +240,7 @@ const UsMap = () => {
 
           <div className="tracker-last-updated">
             <p>
-              Last Updated: { stats ? friendlyDate(stats?.updated) : '-' }
+              Last Updated: { california ? friendlyDate(california?.updated) : '-' }
             </p>
           </div>
         </div>

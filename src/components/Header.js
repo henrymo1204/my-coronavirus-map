@@ -16,7 +16,7 @@ const Header = () => {
             <Link to="/page-2/">Page 2</Link>
           </li>
           <li>
-            <Link to="/us-map/">US Map</Link>
+            <Link to="/us-map/">California</Link>
           </li>
         </ul>
       </Container>

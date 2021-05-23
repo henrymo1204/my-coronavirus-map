@@ -5,6 +5,7 @@
   "author": "Colby Fayock <hello@colbyfayock.com>",
   "dependencies": {
     "axios": "^0.19.2",
+    "chart.js": "^3.2.1",
     "gatsby": "^2.19.43",
     "gatsby-plugin-react-helmet": "^3.1.23",
     "gatsby-plugin-react-leaflet": "2.0.12",
@@ -15,10 +16,11 @@
     "path": "^0.12.7",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
+    "react-chartjs-2": "^3.0.3",
     "react-dom": "^16.13.0",
     "react-helmet": "^5.2.0",
     "react-leaflet": "^2.6.3",
-    "sass": "^1.33.0"
+    "sass": "^1.34.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

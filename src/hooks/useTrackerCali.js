@@ -1,22 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-
-const API_HOST = 'https://corona.lmao.ninja/v2';
+const API_HOST = 'https://corona.lmao.ninja/v3/covid-19/states';
 
 const ENDPOINTS = [
   {
-    id: 'all',
-    path: '/all',
+    id: 'california',
+    path: '/california',
     isDefault: true
-  },
-  {
-    id: 'countries',
-    path: '/countries'
-  },
-  {
-    id: 'states',
-    path: '/states'
   }
 ]
 
@@ -25,7 +16,7 @@ const defaultState = {
   state: 'ready'
 }
 
-const useTracker = ({ api = 'all' }) => {
+const useTrackerCali = ({ api = 'california' }) => {
 
   const [tracker = {}, updateTracker] = useState(defaultState)
 
@@ -69,6 +60,7 @@ const useTracker = ({ api = 'all' }) => {
 
   }
 
+
   useEffect(() => {
     fetchTracker()
   }, [api])
@@ -79,4 +71,4 @@ const useTracker = ({ api = 'all' }) => {
   }
 };
 
-export default useTracker;
+export default useTrackerCali;

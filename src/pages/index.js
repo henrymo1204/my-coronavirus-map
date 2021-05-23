@@ -9,25 +9,30 @@ import Container from 'components/Container';
 import Map from 'components/Map';
 
 const LOCATION = {
-  lat: 0,
+  lat: -20,
   lng: 0
 };
 const CENTER = [LOCATION.lat, LOCATION.lng];
-const DEFAULT_ZOOM = 1;
+const DEFAULT_ZOOM = 1.5;
 
 
 
 const IndexPage = () => {
 
-  const { data: stats = {} } = useTracker({
-    api: 'all'
-  });
-  console.log('stats',stats); 
-
   const { data: countries = [] } = useTracker({
     api: 'countries'
   });
+
+  const { data: stats = {} } = useTracker({
+    api: 'all'
+  });
+
+
   
+  console.log('stats',stats); 
+  console.log('Data',countries); 
+
+
   const hasCountries = Array.isArray(countries) && countries.length > 0;
 
   const dashboardStats = [
@@ -180,9 +185,8 @@ const IndexPage = () => {
         <title>Home Page</title>
       </Helmet>
         
-
+      <Map {...mapSettings} />
       <div className="tracker">
-        <Map {...mapSettings} />
         <div className="tracker-stats">
           <ul>
             { dashboardStats.map(({ primary = {}, secondary = {} }, i) => {
