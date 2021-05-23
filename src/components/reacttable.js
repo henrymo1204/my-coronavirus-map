@@ -18,6 +18,8 @@ const styles = (theme) => ({
     display: 'flex',
     alignItems: 'center',
     boxSizing: 'border-box',
+    backgroundColor: 'rgb(39, 50, 56)',
+    color: 'white'
   },
   table: {
     '& .ReactVirtualized__Table__headerRow': {
