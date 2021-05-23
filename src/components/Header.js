@@ -18,10 +18,10 @@ const Header = () => {
             <Link to="/" onClick={clearFeatureGroup}>Home</Link>
           </li>
           <li>
-            <Link to="/page-2/">Page 2</Link>
+            <Link to="/us-map/" onClick={clearFeatureGroup}>California</Link>
           </li>
           <li>
-            <Link to="/us-map/" onClick={clearFeatureGroup}>California</Link>
+            <Link to="/page-2/">Charts</Link>
           </li>
         </ul>
       </Container>
