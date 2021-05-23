@@ -219,13 +219,13 @@ const IndexPage = () => {
           </div>
         </div>
       </div>
-      <div>Total Cases, Decovered, Deaths By Country</div>
+      <div>Total Cases, Recovered, Deaths By Country</div>
       <Graph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></Graph>
-      <div>Total Cases, Decovered, Deaths Worldwide In The Past 14 Days</div>
+      <div>Total Cases, Recovered, Deaths Worldwide In The Past 14 Days</div>
       <Graph url={'https://corona.lmao.ninja/v3/covid-19/historical/all?lastdays=14'}></Graph>
-      <div>Projected Actual Total Cases, Decovered, Deaths By Country</div>
+      <div>Projected Actual Total Cases, Recovered, Deaths By Country</div>
       <ProjectedGraph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></ProjectedGraph>
-      <div>Prediction of Actual Total Cases, Decovered, Deaths By Country</div>
+      <div>Prediction of Actual Total Cases, Recovered, Deaths By Country</div>
       <PredictGraph url={'https://corona.lmao.ninja/v3/covid-19/countries?sort=cases'}></PredictGraph>
     </Layout>
   );

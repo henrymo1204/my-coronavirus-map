@@ -172,12 +172,12 @@ class Graph extends Component{
                         data: yesterdayCases
                     },
                     {
-                        label: "Today's Recovered",
+                        label: "Yesteroday's Recovered",
                         data: yesterdayRecovered,
                         backgroundColor: 'rgba(155,231,91,0.2)'
                     },
                     {
-                        label: "Today's Deaths",
+                        label: "Yesterday's Deaths",
                         data: yesterdayDeaths,
                         backgroundColor: 'rgba(255,99,132,0.2)',
                     },

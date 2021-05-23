@@ -248,11 +248,11 @@ const UsMap = () => {
           </div>
         </div>
       </div>
-      <div>Total Cases, Decovered, Deaths By California County</div>
+      <div>Total Cases, Recovered, Deaths By California County</div>
       <Graph url={'https://corona.lmao.ninja/v3/covid-19/historical/usacounties/california?lastdays=2'}></Graph>
-      <div>Projected Actual Total Cases, Decovered, Deaths By California County</div>
+      <div>Projected Actual Total Cases, Recovered, Deaths By California County</div>
       <ProjectedGraph url={'https://corona.lmao.ninja/v3/covid-19/jhucsse/counties'}></ProjectedGraph>
-      <div>Prediction of Actual Total Cases, Decovered, Deaths By California County</div>
+      <div>Prediction of Actual Total Cases, Recovered, Deaths By California County</div>
       <PredictGraph url={'https://corona.lmao.ninja/v3/covid-19/jhucsse/counties'}></PredictGraph>
     </Layout>
   );
